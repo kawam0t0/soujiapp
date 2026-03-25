@@ -1,11 +1,11 @@
 {
-  "name": "Clean Ambassador",
+  "name": "THE CLEAN",
   "short_name": "Clean",
   "description": "清掃当番管理アプリ - 本日のタスクと当番ローテーションを一画面で管理",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "theme_color": "#1e293b",
   "background_color": "#0f172a",
   "icons": [
