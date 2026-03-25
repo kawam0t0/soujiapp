@@ -172,22 +172,22 @@ export default function CleaningApp() {
   }
 
   return (
-    <main className="min-h-screen bg-background font-sans">
+      <main className="h-dvh flex flex-col bg-background font-sans overflow-hidden">
 
       {/* HEADER */}
       <header className="sticky top-0 z-30 border-b border-border" style={{ background: "linear-gradient(135deg, #0f1c2e 0%, #1e3a6e 60%, #162a4e 100%)" }}>
-        <div className="max-w-screen-xl mx-auto px-6 flex items-center justify-between h-28">
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center border-2 border-primary/40 bg-primary/10 shadow-lg flex-shrink-0">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-8 h-8 text-primary" aria-hidden="true">
+        <div className="max-w-screen-xl mx-auto px-4 flex items-center justify-between h-14">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center border-2 border-primary/40 bg-primary/10 shadow-lg flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-primary" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
               </svg>
             </div>
             <div>
-              <h1 className="text-5xl font-black tracking-tight leading-none" style={{ color: "#4da6c8" }}>
+              <h1 className="text-xl font-black tracking-tight leading-none" style={{ color: "#4da6c8" }}>
                 Clean Ambassador
               </h1>
-              <p className="text-2xl font-extrabold tracking-widest uppercase mt-1" style={{ color: "#E05A3A" }}>
+              <p className="text-xs font-extrabold tracking-widest uppercase" style={{ color: "#E05A3A" }}>
                 Have a clean day!!!
               </p>
             </div>
@@ -328,175 +328,178 @@ export default function CleaningApp() {
         </div>
       )}
 
-      <div className="max-w-screen-xl mx-auto px-4 py-4">
-        {/* Date navigation */}
-        <div className="flex items-center justify-between bg-card border border-border rounded-lg px-4 py-2.5 mb-4">
-          <button type="button" onClick={() => setViewDate((d) => addDays(d, -1))}
-            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground" aria-label="前の日">
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <div className="text-center">
-            <p className="font-semibold text-foreground text-sm">{formatDate(viewDate)}</p>
-            {isToday && (
-              <span className="inline-block text-xs bg-primary/15 text-primary px-2 py-0.5 rounded font-medium mt-0.5 border border-primary/20">本日</span>
-            )}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full max-w-screen-xl mx-auto px-3 py-2 flex flex-col gap-2">
+          {/* Date navigation */}
+          <div className="flex items-center justify-between bg-card border border-border rounded-lg px-3 py-2 flex-shrink-0">
+            <button type="button" onClick={() => setViewDate((d) => addDays(d, -1))}
+              className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground" aria-label="前の日">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div className="text-center">
+              <p className="font-semibold text-foreground text-sm">{formatDate(viewDate)}</p>
+              {isToday && (
+                <span className="inline-block text-xs bg-primary/15 text-primary px-2 py-0.5 rounded font-medium border border-primary/20">本日</span>
+              )}
+            </div>
+            <button type="button" onClick={() => setViewDate((d) => addDays(d, 1))}
+              className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground" aria-label="次の日">
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-          <button type="button" onClick={() => setViewDate((d) => addDays(d, 1))}
-            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground" aria-label="次の日">
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
 
-        {/* Two-column layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:items-start">
+          {/* Two-column layout — fills remaining height */}
+          <div className="flex-1 overflow-hidden grid grid-cols-1 md:grid-cols-3 gap-3">
 
-          {/* LEFT — Duty display (2 cols) */}
-          <div className="md:col-span-2 flex flex-col gap-4">
-            {total > 0 ? (
-              <>
-                {/* Today's duty card */}
-                <div className="bg-card border border-border rounded-lg overflow-hidden">
-                  <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-                    <div className="w-1.5 h-4 rounded-full bg-destructive"></div>
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                      {isToday ? "本日の当番" : "当日の当番"}
-                    </span>
-                  </div>
+            {/* LEFT — Duty display (2 cols) */}
+            <div className="md:col-span-2 flex flex-col gap-3 overflow-y-auto min-h-0">
+              {total > 0 ? (
+                <>
+                  {/* Today's duty card */}
+                  <div className="bg-card border border-border rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="px-3 py-2 border-b border-border flex items-center gap-2">
+                      <div className="w-1.5 h-4 rounded-full bg-destructive"></div>
+                      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        {isToday ? "本日の当番" : "当日の当番"}
+                      </span>
+                    </div>
 
-                  {/* Duty member — large water drop */}
-                  <div className="flex items-center justify-center py-8 px-4">
-                    <div className="flex flex-col items-center gap-1">
-                      <WaterDropBadge name={dutyMember} size="lg" variant="duty" />
-                      {dutyStaff?.email && (
-                        <span className="text-xs text-muted-foreground truncate max-w-[14rem]">{dutyStaff.email}</span>
-                      )}
+                    {/* Duty member — water drop, size adapts to available space */}
+                    <div className="flex items-center justify-center py-4 px-4">
+                      <div className="flex flex-col items-center gap-1">
+                        <WaterDropBadge name={dutyMember} size="lg" variant="duty" />
+                        {dutyStaff?.email && (
+                          <span className="text-xs text-muted-foreground truncate max-w-[14rem]">{dutyStaff.email}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Rest members */}
+                    <div className="border-t border-border bg-muted/30 flex items-center gap-2 py-2 px-3 flex-wrap">
+                      <span className="text-xs text-muted-foreground font-medium">お休み：</span>
+                      {restMembers.map((name) => (
+                        <span key={name} className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-xs font-bold border border-border">
+                          {name}
+                        </span>
+                      ))}
                     </div>
                   </div>
 
-                  {/* Rest members */}
-                  <div className="border-t border-border bg-muted/30 flex items-center gap-2 py-2.5 px-4 flex-wrap">
-                    <span className="text-xs text-muted-foreground font-medium">お休み：</span>
-                    {restMembers.map((name) => (
-                      <span key={name} className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-bold border border-border">
-                        {name}
+                  {/* Tomorrow's duty card */}
+                  <div className="bg-card border border-border rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="px-3 py-2 border-b border-border flex items-center gap-2">
+                      <div className="w-1.5 h-4 rounded-full bg-primary"></div>
+                      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">明日の当番</span>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {tomorrow.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", weekday: "short" })}
                       </span>
-                    ))}
+                    </div>
+                    <div className="flex items-center gap-4 py-3 px-4">
+                      <WaterDropBadge name={tomorrowMember} size="md" variant="tomorrow" />
+                    </div>
                   </div>
+                </>
+              ) : (
+                <div className="bg-card border border-border rounded-lg p-8 text-center text-muted-foreground text-sm">
+                  {staffLoading ? "スタッフ情報を取得中..." : "メンバーがいません。メニューからメンバーを追加してください。"}
                 </div>
-
-                {/* Tomorrow's duty card — smaller */}
-                <div className="bg-card border border-border rounded-lg overflow-hidden">
-                  <div className="px-4 py-3 border-b border-border flex items-center gap-2">
-                    <div className="w-1.5 h-4 rounded-full bg-primary"></div>
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">明日の当番</span>
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      {tomorrow.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", weekday: "short" })}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 py-4 px-6">
-                    <WaterDropBadge name={tomorrowMember} size="md" variant="tomorrow" />
-                    <span className="text-xs text-muted-foreground ml-1">が担当します</span>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="bg-card border border-border rounded-lg p-8 text-center text-muted-foreground text-sm">
-                {staffLoading ? "スタッフ情報を取得中..." : "メンバーがいません。メニューからメンバーを追加してください。"}
-              </div>
-            )}
-          </div>
-
-          {/* RIGHT — tabs (1 col, sticky) */}
-          <div className="md:col-span-1 md:sticky md:top-16 flex flex-col">
-            <div className="flex bg-muted rounded-md p-0.5 mb-3 gap-0.5">
-              {(["tasks", "rotation"] as Tab[]).map((tab) => (
-                <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-1.5 rounded text-xs font-semibold transition-colors ${activeTab === tab
-                      ? "bg-card text-foreground shadow-sm border border-border"
-                      : "text-muted-foreground hover:text-foreground"
-                    }`}>
-                  {tab === "tasks" ? "本日のタスク" : "ローテーション"}
-                </button>
-              ))}
+              )}
             </div>
 
-            {activeTab === "tasks" && (
-              <TaskChecklist todayKey={todayKey} date={viewDate} onAllDone={setAllTasksDone} />
-            )}
-
-            {activeTab === "rotation" && (
-              <div className="rounded-lg border border-border bg-card overflow-hidden">
-                <div className="px-3 py-2 border-b border-border bg-muted/40 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-4 rounded-full bg-accent"></div>
-                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">今後7日間</span>
-                  </div>
-                  {Object.keys(rotationOverrides).length > 0 && (
-                    <button type="button" onClick={() => setRotationOverrides({})}
-                      className="text-xs text-muted-foreground hover:text-foreground underline">
-                      リセット
-                    </button>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground px-3 py-1.5 bg-muted/20 border-b border-border">
-                  バッジをドラッグして当番を入れ替えられます
-                </p>
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border">
-                      <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">日��</th>
-                      <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">当番</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {Array.from({ length: 7 }).map((_, i) => {
-                      const d = addDays(viewDate, i);
-                      const dateKey = toISODate(d);
-                      const member = getDutyMemberForDate(d, members, rotationOverrides);
-                      const isThisToday = d.toDateString() === today.toDateString();
-                      const isDropHere = dropTarget === dateKey;
-                      return (
-                        <tr key={dateKey}
-                          className={isThisToday ? "bg-primary/10" : "hover:bg-muted/20"}
-                          onDragOver={(e) => { e.preventDefault(); setDropTarget(dateKey); }}
-                          onDragLeave={() => setDropTarget(null)}
-                          onDrop={(e) => { e.preventDefault(); handleBadgeDrop(dateKey); }}>
-                          <td className="px-3 py-2 align-middle">
-                            <span className={`text-xs font-medium ${isThisToday ? "text-primary" : "text-foreground"}`}>
-                              {d.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", weekday: "short" })}
-                            </span>
-                            {isThisToday && (
-                              <span className="ml-1 text-xs bg-primary/20 text-primary px-1 py-0.5 rounded border border-primary/20">今日</span>
-                            )}
-                            {rotationOverrides[dateKey] && (
-                              <span className="ml-1 text-xs" style={{ color: "#E05A3A" }}>*</span>
-                            )}
-                          </td>
-                          <td className="px-3 py-2 align-middle">
-                            <span
-                              draggable
-                              onDragStart={(e) => {
-                                e.dataTransfer.effectAllowed = "move";
-                                handleBadgeDragStart(dateKey, member);
-                              }}
-                              className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold text-white select-none cursor-grab active:cursor-grabbing transition-all"
-                              style={{
-                                background: isDropHere ? "#16a34a" : "#22c55e",
-                                boxShadow: isDropHere ? "0 0 0 2px #4ade80" : "none",
-                                transform: isDropHere ? "scale(1.1)" : "scale(1)",
-                                minWidth: "2.5rem",
-                              }}
-                            >
-                              {member}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+            {/* RIGHT — tabs (1 col, scrollable) */}
+            <div className="md:col-span-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex bg-muted rounded-md p-0.5 mb-2 gap-0.5 flex-shrink-0">
+                {(["tasks", "rotation"] as Tab[]).map((tab) => (
+                  <button key={tab} type="button" onClick={() => setActiveTab(tab)}
+                    className={`flex-1 py-1.5 rounded text-xs font-semibold transition-colors ${activeTab === tab
+                        ? "bg-card text-foreground shadow-sm border border-border"
+                        : "text-muted-foreground hover:text-foreground"
+                      }`}>
+                    {tab === "tasks" ? "本日のタスク" : "ローテーション"}
+                  </button>
+                ))}
               </div>
-            )}
+
+              <div className="flex-1 overflow-y-auto min-h-0">
+                {activeTab === "tasks" && (
+                  <TaskChecklist todayKey={todayKey} date={viewDate} onAllDone={setAllTasksDone} />
+                )}
+
+                {activeTab === "rotation" && (
+                  <div className="rounded-lg border border-border bg-card overflow-hidden">
+                    <div className="px-3 py-2 border-b border-border bg-muted/40 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-4 rounded-full bg-accent"></div>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">今後7日間</span>
+                      </div>
+                      {Object.keys(rotationOverrides).length > 0 && (
+                        <button type="button" onClick={() => setRotationOverrides({})}
+                          className="text-xs text-muted-foreground hover:text-foreground underline">
+                          リセット
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground px-3 py-1.5 bg-muted/20 border-b border-border">
+                      バッジをドラッグして当番を入れ替えられます
+                    </p>
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">日付</th>
+                          <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">当番</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border">
+                        {Array.from({ length: 7 }).map((_, i) => {
+                          const d = addDays(viewDate, i);
+                          const dateKey = toISODate(d);
+                          const member = getDutyMemberForDate(d, members, rotationOverrides);
+                          const isThisToday = d.toDateString() === today.toDateString();
+                          const isDropHere = dropTarget === dateKey;
+                          return (
+                            <tr key={dateKey}
+                              className={isThisToday ? "bg-primary/10" : "hover:bg-muted/20"}
+                              onDragOver={(e) => { e.preventDefault(); setDropTarget(dateKey); }}
+                              onDragLeave={() => setDropTarget(null)}
+                              onDrop={(e) => { e.preventDefault(); handleBadgeDrop(dateKey); }}>
+                              <td className="px-3 py-2 align-middle">
+                                <span className={`text-xs font-medium ${isThisToday ? "text-primary" : "text-foreground"}`}>
+                                  {d.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", weekday: "short" })}
+                                </span>
+                                {isThisToday && (
+                                  <span className="ml-1 text-xs bg-primary/20 text-primary px-1 py-0.5 rounded border border-primary/20">今日</span>
+                                )}
+                                {rotationOverrides[dateKey] && (
+                                  <span className="ml-1 text-xs" style={{ color: "#E05A3A" }}>*</span>
+                                )}
+                              </td>
+                              <td className="px-3 py-2 align-middle">
+                                <span
+                                  draggable
+                                  onDragStart={(e) => {
+                                    e.dataTransfer.effectAllowed = "move";
+                                    handleBadgeDragStart(dateKey, member);
+                                  }}
+                                  className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold text-white select-none cursor-grab active:cursor-grabbing transition-all"
+                                  style={{
+                                    background: isDropHere ? "#16a34a" : "#22c55e",
+                                    boxShadow: isDropHere ? "0 0 0 2px #4ade80" : "none",
+                                    transform: isDropHere ? "scale(1.1)" : "scale(1)",
+                                    minWidth: "2.5rem",
+                                  }}
+                                >
+                                  {member}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

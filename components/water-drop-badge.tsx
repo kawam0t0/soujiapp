@@ -18,9 +18,9 @@ interface WaterDropBadgeProps {
 // Top tip at (50, 2), circular belly at bottom.
 const DROP_PATH = "M 50 2 C 50 2, 8 50, 8 76 A 42 42 0 0 0 92 76 C 92 50, 50 2, 50 2 Z";
 
-const SIZES: Record<string, { w: number; h: number; fontSize: number }> = {
-  lg: { w: 280, h: 336, fontSize: 18 },
-  md: { w: 110, h: 132, fontSize: 14 },
+const SIZES: Record<string, { w: number; h: number; fontSize: number; responsive?: boolean }> = {
+  lg: { w: 180, h: 216, fontSize: 22, responsive: true },
+  md: { w: 80,  h: 96,  fontSize: 14 },
   sm: { w: 52,  h: 62,  fontSize: 10 },
 };
 

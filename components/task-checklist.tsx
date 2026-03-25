@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { ShoppingCart } from "lucide-react";
 
 // -------------------------------------------------------
@@ -210,6 +210,7 @@ interface TaskChecklistProps {
 
 export function TaskChecklist({ todayKey, date, onAllDone }: TaskChecklistProps) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
 
   const todayTasks = useMemo(
     () => ALL_TASKS.filter((t) => isTodayTask(t, date)),
@@ -225,8 +226,24 @@ export function TaskChecklist({ todayKey, date, onAllDone }: TaskChecklistProps)
     return map;
   }, [todayTasks]);
 
+  // Auto-expand only if there are incomplete tasks in the category (otherwise stay closed)
+  useEffect(() => {
+    const expanded: Record<string, boolean> = {};
+    CATEGORY_ORDER.forEach((cat) => {
+      if (categorized[cat]) {
+        // Default closed; can be opened by user click or later auto-opened if needed
+        expanded[cat] = false;
+      }
+    });
+    setExpandedCategories(expanded);
+  }, [categorized]);
+
   const toggle = useCallback((id: string) => {
     setChecked((prev) => ({ ...prev, [id]: !prev[id] }));
+  }, []);
+
+  const toggleCategory = useCallback((cat: string) => {
+    setExpandedCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
   }, []);
 
   const totalCount = todayTasks.length;
@@ -251,54 +268,78 @@ export function TaskChecklist({ todayKey, date, onAllDone }: TaskChecklistProps)
         </div>
       </div>
 
-      {/* Task categories */}
-      {CATEGORY_ORDER.filter((cat) => categorized[cat]?.length).map((category) => (
-        <div key={category} className="rounded-lg border border-border bg-card overflow-hidden">
-          <div className="flex items-center gap-2 px-3 py-2 bg-muted/40 border-b border-border">
-            <span className="text-primary">{CATEGORY_ICONS[category]}</span>
-            <h3 className="font-semibold text-xs text-foreground uppercase tracking-wider">{category}</h3>
-            <span className="ml-auto text-xs text-muted-foreground">
-              {categorized[category].filter((t) => checked[t.id]).length}/{categorized[category].length}
-            </span>
-          </div>
-          <ul className="divide-y divide-border">
-            {categorized[category].map((task) => {
-              const isChecked = !!checked[task.id];
-              const badge = FREQUENCY_BADGE[task.frequency];
-              return (
-                <li key={task.id} className={`flex items-center ${isChecked ? "bg-primary/5" : ""}`}>
-                  <button type="button" onClick={() => toggle(task.id)}
-                    className="flex-1 flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-muted/30 active:bg-muted/50"
-                    aria-pressed={isChecked}>
-                    <div className={`flex-none w-4 h-4 rounded border flex items-center justify-center transition-all ${
-                      isChecked ? "bg-primary border-primary" : "border-border bg-background"
-                    }`}>
-                      {isChecked && (
-                        <svg viewBox="0 0 12 12" fill="none" className="w-2.5 h-2.5 text-primary-foreground">
-                          <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
+      {/* Task categories - accordion */}
+      {CATEGORY_ORDER.filter((cat) => categorized[cat]?.length).map((category) => {
+        const isExpanded = expandedCategories[category];
+        const categoryTasks = categorized[category];
+        const completedCount = categoryTasks.filter((t) => checked[t.id]).length;
+        const isAllComplete = completedCount === categoryTasks.length;
+        return (
+          <div key={category} className="rounded-lg border border-border bg-card overflow-hidden">
+            {/* Accordion Header - clickable */}
+            <button
+              type="button"
+              onClick={() => toggleCategory(category)}
+              className={`w-full flex items-center gap-2 px-3 py-2 bg-muted/40 border-b border-border hover:bg-muted/60 transition-colors ${isExpanded ? "border-b-primary/30" : ""}`}
+              aria-expanded={isExpanded}
+            >
+              {/* Expand/collapse icon */}
+              <svg className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? "rotate-90" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+
+              {/* Category icon and name */}
+              <span className="text-primary">{CATEGORY_ICONS[category]}</span>
+              <h3 className="font-semibold text-xs text-foreground uppercase tracking-wider">{category}</h3>
+
+              {/* Progress indicator */}
+              <span className={`ml-auto text-xs font-medium ${isAllComplete ? "text-green-500" : "text-muted-foreground"}`}>
+                {completedCount}/{categoryTasks.length}
+              </span>
+            </button>
+
+            {/* Accordion Content - conditional render */}
+            {isExpanded && (
+              <ul className="divide-y divide-border">
+                {categoryTasks.map((task) => {
+                  const isChecked = !!checked[task.id];
+                  const badge = FREQUENCY_BADGE[task.frequency];
+                  return (
+                    <li key={task.id} className={`flex items-center ${isChecked ? "bg-primary/5" : ""}`}>
+                      <button type="button" onClick={() => toggle(task.id)}
+                        className="flex-1 flex items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-muted/30 active:bg-muted/50"
+                        aria-pressed={isChecked}>
+                        <div className={`flex-none w-4 h-4 rounded border flex items-center justify-center transition-all ${
+                          isChecked ? "bg-primary border-primary" : "border-border bg-background"
+                        }`}>
+                          {isChecked && (
+                            <svg viewBox="0 0 12 12" fill="none" className="w-2.5 h-2.5 text-primary-foreground">
+                              <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className={`flex-1 text-xs font-medium transition-all ${
+                          isChecked ? "line-through text-muted-foreground" : "text-foreground"
+                        }`}>{task.label}</span>
+                        <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${badge.color}`}>{badge.label}</span>
+                      </button>
+                      {task.amazonUrl && (
+                        <a href={task.amazonUrl} target="_blank" rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex-none flex items-center gap-1 mx-2 px-2 py-1 rounded bg-[#FF9900]/10 hover:bg-[#FF9900]/20 text-[#FF9900] transition-colors text-xs font-semibold border border-[#FF9900]/25"
+                          aria-label={`${task.label}をAmazonで購入`}>
+                          <ShoppingCart className="w-3 h-3" />
+                          <span>購入</span>
+                        </a>
                       )}
-                    </div>
-                    <span className={`flex-1 text-xs font-medium transition-all ${
-                      isChecked ? "line-through text-muted-foreground" : "text-foreground"
-                    }`}>{task.label}</span>
-                    <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${badge.color}`}>{badge.label}</span>
-                  </button>
-                  {task.amazonUrl && (
-                    <a href={task.amazonUrl} target="_blank" rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex-none flex items-center gap-1 mx-2 px-2 py-1 rounded bg-[#FF9900]/10 hover:bg-[#FF9900]/20 text-[#FF9900] transition-colors text-xs font-semibold border border-[#FF9900]/25"
-                      aria-label={`${task.label}をAmazonで購入`}>
-                      <ShoppingCart className="w-3 h-3" />
-                      <span>購入</span>
-                    </a>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
