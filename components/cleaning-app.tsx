@@ -101,6 +101,25 @@ export default function CleaningApp() {
 
   useEffect(() => { fetchStaff(); }, [fetchStaff]);
 
+  // Auto-update viewDate when date changes (Japan timezone)
+  useEffect(() => {
+    const checkDateChange = () => {
+      const now = new Date();
+      const jstDate = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+      const currentViewDate = new Date(viewDate.toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+      
+      if (jstDate.toDateString() !== currentViewDate.toDateString()) {
+        setViewDate(jstDate);
+      }
+    };
+
+    // Check every minute
+    const interval = setInterval(checkDateChange, 60000);
+    checkDateChange(); // Check immediately on mount
+
+    return () => clearInterval(interval);
+  }, [viewDate]);
+
   const total = members.length;
   const dutyMember = getDutyMemberForDate(viewDate, members, rotationOverrides);
   const restMembers = members.filter((m) => m !== dutyMember);
@@ -172,7 +191,7 @@ export default function CleaningApp() {
   }
 
   return (
-      <main className="h-dvh flex flex-col bg-background font-sans overflow-hidden">
+    <main className="h-dvh flex flex-col bg-background font-sans overflow-hidden">
 
       {/* HEADER */}
       <header className="sticky top-0 z-30 border-b border-border" style={{ background: "linear-gradient(135deg, #0f1c2e 0%, #1e3a6e 60%, #162a4e 100%)" }}>
@@ -394,8 +413,14 @@ export default function CleaningApp() {
                         {tomorrow.toLocaleDateString("ja-JP", { month: "numeric", day: "numeric", weekday: "short" })}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 py-3 px-4">
-                      <WaterDropBadge name={tomorrowMember} size="md" variant="tomorrow" />
+                    <div className="flex items-center gap-3 py-3 px-4">
+                      <span
+                        className="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-sm font-bold text-white"
+                        style={{ background: "#22c55e" }}
+                      >
+                        {tomorrowMember}
+                      </span>
+                      <span className="text-xs text-muted-foreground">が担当します</span>
                     </div>
                   </div>
                 </>
@@ -412,8 +437,8 @@ export default function CleaningApp() {
                 {(["tasks", "rotation"] as Tab[]).map((tab) => (
                   <button key={tab} type="button" onClick={() => setActiveTab(tab)}
                     className={`flex-1 py-1.5 rounded text-xs font-semibold transition-colors ${activeTab === tab
-                        ? "bg-card text-foreground shadow-sm border border-border"
-                        : "text-muted-foreground hover:text-foreground"
+                      ? "bg-card text-foreground shadow-sm border border-border"
+                      : "text-muted-foreground hover:text-foreground"
                       }`}>
                     {tab === "tasks" ? "本日のタスク" : "ローテーション"}
                   </button>
